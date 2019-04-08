@@ -41,7 +41,7 @@ export default function App() {
     url: scrapeAPI
   });
   const getAllKeys = async () => {
-    let data = allScrapes.data;
+    let data = await allScrapes.data;
     console.log(data);
   };
 
