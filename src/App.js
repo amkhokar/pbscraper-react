@@ -1,28 +1,56 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+function useEndpoint(req) {
+  const [res, setRes] = useState({
+    data: null,
+    complete: false,
+    pending: false,
+    error: false
+  });
+  useEffect(() => {
+    setRes({
+      data: null,
+      pending: true,
+      error: false,
+      complete: false
+    });
+    axios(req)
+      .then(res =>
+        setRes({
+          data: res.data,
+          pending: false,
+          error: false,
+          complete: true
+        })
+      )
+      .catch(() =>
+        setRes({
+          data: null,
+          pending: false,
+          error: true,
+          complete: true
+        })
+      );
+  }, [req.url]);
+  return res;
 }
+export default function App() {
+  const scrapeAPI = "https://localhost:5001/api/pbscrape";
+  const allScrapes = useEndpoint({
+    method: "GET",
+    url: scrapeAPI
+  });
+  const getAllKeys = async () => {
+    let data = allScrapes.data;
+    console.log(data);
+  };
 
-export default App;
+  return (
+    <div>
+      <h1>Napster API Songs</h1>
+      {allScrapes.data}
+      {console.log(allScrapes.data)}
+      <button onClick={getAllKeys}>Get Keys</button>
+    </div>
+  );
+}
